@@ -1,0 +1,158 @@
+.header {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  justify-content: space-between;
+  max-width: 1140px;
+  padding-top: 18px;
+  margin: 0 auto;
+}
+
+.header__logo {
+  display: block;
+  width: 38px;
+  height: 38px;
+  background-image: url(../../images/logo_header.svg);
+  transition: opacity .4s linear;
+}
+
+.header__logo:hover {
+  opacity: 0.6;
+}
+
+.header__links {
+  font-size: 12px;
+  line-height: 1.33;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  margin-left: 62px;
+}
+
+.header__links_none {
+  display: none;
+}
+
+.header__link-films {
+  font-weight: 500;
+  font-size: 13px;
+  line-height: 18px;
+  text-decoration: none;
+  color: #000000;
+  margin: 0 16px 0 0;
+  transition: opacity .4s linear;
+}
+
+.header__link-films:hover {
+  opacity: 0.6;
+}
+
+.header__link-savefilms {
+  font-weight: 400;
+  font-size: 13px;
+  line-height: 18px;
+  text-decoration: none;
+  color: #000000;
+  transition: opacity .4s linear;
+}
+
+.header__link-savefilms:hover {
+  opacity: 0.6;
+}
+
+.header__link-profile {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  width: 100px;
+  height: 32px;
+  border: 2px solid rgba(170, 170, 170, .2);
+  border-radius: 50px;
+  text-decoration: none;
+  transition: opacity .4s linear;
+}
+
+.header__link-profile:hover {
+  opacity: 0.6;
+}
+
+.header__icon {
+  width: 12px;
+  height: 14px;
+  background-image: url(../../images/account_icon.svg);
+}
+
+.header__account {
+  margin: 0 0 0 7px;
+  font-weight: 500;
+  font-size: 14px;
+  line-height: 16px;
+  color: #000000;
+}
+
+.header__register {
+  color: black;
+  text-decoration: none;
+  margin-right: 30px;
+  transition: opacity .4s linear;
+}
+
+.header__register:hover {
+  opacity: 0.6;
+}
+
+.header__sign {
+  width: 76px;
+  height: 32px;
+  background-color: #3456F3;
+  border-radius: 3px;
+  color: #FFFFFF;
+  text-decoration: none;
+  border: none;
+  transition: opacity .4s linear;
+}
+
+.header__sign:hover {
+  opacity: 0.6;
+}
+
+.header__sign-text {
+  margin: 8px 20px;
+}
+
+@media (max-width: 1140px) {
+  .header {
+    padding: 18px 21px 0 30px;
+  }
+}
+
+@media (max-width: 1020px) {
+  .header__links {
+    display: none;
+  }
+
+  .header__link-profile {
+    display: none;
+  }
+}
+
+@media (max-width: 720px) {
+  .header__links {
+    font-size: 10px;
+    line-height: 1.6;
+  }
+
+  .header__register {
+    margin-right: 14px;
+  }
+
+  .header__sign {
+    width: 54px;
+    height: 26px;
+  }
+
+  .header__sign-text {
+    margin: 5px 12px;
+  }
+}

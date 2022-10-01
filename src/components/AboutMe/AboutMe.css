@@ -1,0 +1,139 @@
+.aboutMe {
+  margin: 110px auto 100px;
+}
+
+.aboutMe__container {
+  margin: 66px auto 0;
+  max-width: 1140px;
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  justify-content: space-between;
+}
+
+.aboutMe__info {
+  max-width: 600px;
+}
+
+.aboutMe__name {
+  margin: 0;
+  font-weight: 400;
+  font-size: 50px;
+  line-height: 58px;
+  letter-spacing: -0.04em;
+}
+
+.aboutMe__subname {
+  margin: 18px 0 0;
+  font-weight: 500;
+  font-size: 18px;
+  line-height: 20px;
+  mix-blend-mode: normal;
+}
+
+.aboutMe__description {
+  margin: 26px 0 0;
+  font-weight: 400;
+  font-size: 14px;
+  line-height: 22px;
+  mix-blend-mode: normal;
+}
+
+.aboutMe__github {
+  display: block;
+  max-width: 600px;
+  margin: 99px 0 0;
+  font-weight: 500;
+  font-size: 14px;
+  line-height: 17px;
+  text-decoration: none;
+  color: #000000;
+  transition: opacity .4s linear;
+}
+
+.aboutMe__github:hover {
+  opacity: 0.6;
+}
+
+
+.aboutMe__photo {
+  width: 270px;
+  heigth: 327px;
+  background-image: url(../../images/me.svg);
+  background-size: cover;
+}
+
+@media (max-width: 1140px) {
+  .aboutMe {
+    margin: 90px 50px;
+  }
+
+  .aboutMe__name {
+    max-width: 348px;
+    font-size: 40px;
+    line-height: 40px;
+  }
+
+  .aboutMe__subname {
+    max-width: 348px;
+    margin: 16px 0 0;
+    font-size: 12px;
+    line-height: 18px;
+  }
+
+  .aboutMe__description {
+    max-width: 364px;
+    margin: 20px 0 0;
+    font-weight: 400;
+    font-size: 12px;
+    line-height: 18px;
+  }
+
+  .aboutMe__photo {
+    width: 255px;
+    height: 307px;
+  }
+}
+
+@media (max-width: 740px) {
+  .aboutMe {
+    margin: 70px 18px;
+  }
+
+  .aboutMe__container {
+    margin: 60px auto 0;
+    flex-direction: column;
+    align-content: center;
+  }
+
+  .aboutMe__info {
+    order: 2;
+    margin: 40px 0 0;
+  }
+
+  .aboutMe__name {
+    max-width: 292px;
+    font-size: 30px;
+    line-height: 36px;
+  }
+
+  .aboutMe__subname {
+    max-width: 292px;
+    margin: 20px 0 0;
+    font-size: 11px;
+    line-height: 16px;
+  }
+
+  .aboutMe__description {
+    max-width: 292px;
+    margin: 20px 0 0;
+    font-weight: 400;
+    font-size: 11px;
+    line-height: 16px;
+  }
+
+  .aboutMe__photo {
+    width: 292px;
+    height: 352px;
+  }
+}

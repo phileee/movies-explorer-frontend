@@ -1,0 +1,128 @@
+.aboutProject {
+  max-width: 1140px;
+  margin: 110px auto;
+}
+
+.aboutProject__container {
+  max-width: 1140px;
+  margin: 70px auto 0;
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+}
+
+.aboutProject__article {
+  max-width: 550px;
+}
+
+.aboutProject__title {
+  font-style: normal;
+  font-weight: 400;
+  font-size: 20px;
+  line-height: 24px;
+  letter-spacing: -0.04em;
+}
+
+.aboutProject__description {
+  margin: 26px 0 0;
+  font-style: normal;
+  font-weight: 400;
+  font-size: 14px;
+  line-height: 20px;
+}
+
+.aboutProject__table {
+  margin: 110px 0 0;
+  display: grid;
+  grid-template-columns: 1fr 4fr;
+  grid-template-rows: 36px 36px;
+}
+
+.aboutProject__cell {
+  margin: 0;
+  padding: 9px 0 0;
+  font-style: normal;
+  font-weight: 500;
+  font-size: 14px;
+  line-height: 1.21;
+  text-align: center;
+  color: #A0A0A0;
+}
+
+.aboutProject__cell:nth-child(1) {
+  font-weight: 400;
+  color: #FFFFFF;
+  background-color: #3456F3;
+}
+
+.aboutProject__cell:nth-child(2) {
+  font-weight: 400;
+  color: #000000;
+  background-color: #F2F2F2;
+}
+
+@media (max-width: 1140px) {
+  .aboutProject {
+    margin: 90px 50px;
+  }
+
+  .aboutProject__container {
+    max-width: 670px;
+    justify-content: space-between;
+  }
+
+  .aboutProject__article {
+    max-width: 319px;
+  }
+
+  .aboutProject__description {
+    margin: 22px 0 0;
+    font-style: normal;
+    font-weight: 400;
+    font-size: 12px;
+    line-height: 18px;
+  }
+
+  .aboutProject__table {
+    margin: 93px 0 0;
+  }
+}
+
+@media (max-width: 720px) {
+  .aboutProject {
+    margin: 70px 18px;
+  }
+
+  .aboutProject__container {
+    max-width: 284px;
+    margin: 60px auto 0;
+  }
+
+  .aboutProject__article {
+    max-width: 319px;
+  }
+
+  .aboutProject__title {
+    font-size: 18px;
+    line-height: 22px;
+  }
+
+  .aboutProject__description {
+    margin: 16px 0 0;
+    font-size: 11px;
+    line-height: 16px;
+  }
+
+  .aboutProject__table {
+    margin: 60px auto 0;
+    width: 284px;
+    grid-template-columns: 100px 184px;
+  }
+
+  .aboutProject__cell {
+    padding: 11px 0 0;
+    font-weight: 400;
+    font-size: 11px;
+    line-height: 13px;
+  }
+}
