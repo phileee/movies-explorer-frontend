@@ -6,16 +6,18 @@ import AboutMe from '../AboutMe/AboutMe';
 import Portfolio from '../Portfolio/Portfolio';
 import Footer from '../Footer/Footer';
 
-function Main({loggedIn}) {
+function Main({ loggedIn }) {
   return (
-    <div className="Main">
-      <Promo loggedIn={loggedIn}/>
-      <AboutProject />
-      <Techs />
-      <AboutMe />
-      <Portfolio />
+    <>
+      <main className="Main">
+        <Promo loggedIn={loggedIn} />
+        <AboutProject />
+        <Techs />
+        <AboutMe />
+        <Portfolio />
+      </main>
       <Footer />
-    </div>
+    </>
   );
 }
 

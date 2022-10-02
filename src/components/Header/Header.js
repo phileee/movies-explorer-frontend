@@ -14,7 +14,7 @@ function Header({loggedIn}) {
         <div className="header__icon"/>
         <p className="header__account">Аккаунт</p>
       </Link>
-      <nav className={loggedIn ? "header__links_none" : "header__links"}>
+      <nav className={loggedIn ? "header__links_none" : "header__buttons-sign"}>
         <Link className="header__register" to="/signin" >Регистрация</Link>
         <Link className="header__sign" to="/signup" ><p className="header__sign-text" >Войти</p></Link>
       </nav>

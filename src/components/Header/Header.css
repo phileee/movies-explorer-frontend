@@ -29,6 +29,15 @@
   margin-left: 62px;
 }
 
+.header__buttons-sign {
+  font-size: 12px;
+  line-height: 1.33;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  margin-left: 62px;
+}
+
 .header__links_none {
   display: none;
 }
@@ -138,10 +147,11 @@
 }
 
 @media (max-width: 720px) {
-  .header__links {
+  .header__buttons-sign {
     font-size: 10px;
     line-height: 1.6;
   }
+  
 
   .header__register {
     margin-right: 14px;

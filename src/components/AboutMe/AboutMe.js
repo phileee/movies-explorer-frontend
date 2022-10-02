@@ -12,7 +12,7 @@ function AboutMe() {
           <p className="aboutMe__subname">Фронтенд-разработчик, 30 лет</p>
           <p className="aboutMe__description">Я родился и живу в Саратове, закончил факультет экономики СГУ. У меня есть жена
             и дочь. Я люблю слушать музыку, а ещё увлекаюсь бегом. Недавно начал кодить. С 2015 года работал в компании «СКБ Контур». После того, как прошёл курс по веб-разработке, начал заниматься фриланс-заказами и ушёл с постоянной работы.</p>
-          <Link className="aboutMe__github" to="https://github.com/phileee" >Github</Link>
+          <a className="aboutMe__github" href="https://github.com/phileee" target="_blank" rel="noreferrer">Github</a>
         </article>
         <div className="aboutMe__photo" />
       </div>

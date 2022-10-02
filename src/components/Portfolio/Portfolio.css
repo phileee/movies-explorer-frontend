@@ -21,6 +21,13 @@
   display: flex;
   flex-direction: row;
   justify-content: space-between;
+  transition: opacity .4s linear;
+  text-decoration: none;
+  color: black;
+}
+
+.portfolio__container:hover {
+  opacity: 0.6;
 }
 
 .portfolio__title {
@@ -41,8 +48,9 @@
   transition: opacity .4s linear;
 }
 
-.portfolio__link:hover {
-  opacity: 0.6;
+.portfolio__list {
+  list-style-type: none;
+  padding: 0;
 }
 
 @media (max-width: 1140px) {

@@ -8,6 +8,14 @@ function Navigation() {
 
   const [isVisible, setIsVisible] = React.useState(false);
 
+  React.useEffect(() => {
+    if (isVisible) {
+      document.body.style.overflowY = "hidden";
+    } else {
+      document.body.style.overflowY = "visible";
+    }
+  }, [isVisible])
+
   return (
     <>
       <div className={isVisible ? "navigation navigation__open" : "navigation"}>

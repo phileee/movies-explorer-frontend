@@ -80,8 +80,9 @@
 }
 
 @media (max-width: 720px) {
-  .techs {
+  .techs { 
     padding: 70px 18px;
+    background-color: #ffffff;
   }
 
   .techs__title {
