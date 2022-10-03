@@ -8,25 +8,17 @@ function Navigation() {
 
   const [isVisible, setIsVisible] = React.useState(false);
 
-  React.useEffect(() => {
-    if (isVisible) {
-      document.body.style.overflowY = "hidden";
-    } else {
-      document.body.style.overflowY = "visible";
-    }
-  }, [isVisible])
-
   return (
     <>
       <div className={isVisible ? "navigation navigation__open" : "navigation"}>
         <div className="navigation__exit" onClick={() => setIsVisible(false)} />
         <dib className="navigation__menu">
           <nav className="navigation__container">
-            <Link className="navigation__link">Главная</Link>
-            <Link className="navigation__link">Фильмы</Link>
-            <Link className="navigation__link">Сохраненные фильмы</Link>
+            <Link className="navigation__link" to="/">Главная</Link>
+            <Link className="navigation__link" to="/movies">Фильмы</Link>
+            <Link className="navigation__link" to="/saved-movies" >Сохраненные фильмы</Link>
           </nav>
-          <Link className="navigation__link-profile">
+          <Link className="navigation__link-profile" to="/profile">
             <div className="header__icon" />
             <p className="header__account">Аккаунт</p>
           </Link>

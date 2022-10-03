@@ -29,6 +29,7 @@
     visibility: visible;
     width: 520px;
     overflow: hidden;
+    position: fixed;
   }
 
   .navigation__button {
