@@ -4,14 +4,15 @@ import SearchForm from '../SearchForm/SearchForm';
 import MoviesCardList from '../MoviesCardList/MoviesCardList';
 import Footer from '../Footer/Footer';
 
-function SavedMovies({ loggedIn }) {
+function SavedMovies({ loggedIn, savedMovies, shortSavedMovies, shortsCheckboxSaved, keyWord, handleShortsCheckbox, handleSearchSavedMovies, error, preloader, handleDeleteMovie }) {
+
   return (
     <>
       <Header loggedIn={loggedIn} />
       <main className="movies">
-        <SearchForm />
+        <SearchForm handleSearchMovies={handleSearchSavedMovies} error={error} shortsCheckbox={shortsCheckboxSaved} keyWord={keyWord} handleShortsCheckbox={handleShortsCheckbox} />
         <div className="movies__line" />
-        <MoviesCardList deleteCard={true} />
+        <MoviesCardList movies={shortsCheckboxSaved ? shortSavedMovies : savedMovies} preloader={preloader} handleToggleLike={handleDeleteMovie} />
       </main>
       <Footer />
     </>

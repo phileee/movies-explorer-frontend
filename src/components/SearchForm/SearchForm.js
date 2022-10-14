@@ -1,17 +1,53 @@
 import './SearchForm.css';
+import React, { useState } from "react";
 import Switch from '../Switch/Switch';
 
-function SearchForm() {
+function SearchForm({ handleSearchMovies, error, handleShortsCheckbox, keyWord }) {
+
+  const [searchForm, setSearchForm] = useState({
+    error: '',
+    keyWord: '',
+    isFormValid: false,
+  });
+
+  const handleChange = (evt) => {
+    setSearchForm({
+      ...searchForm,
+      error: '',
+      [evt.target.name]: evt.target.value,
+      isFormValid: evt.target.closest('form').checkValidity(),
+    });
+    
+  }
+
+  const handleSubmit = (evt) => {
+    evt.preventDefault();
+    setSearchForm({
+      ...searchForm,
+      isFormValid: evt.target.closest('form').checkValidity(),
+    });
+    if (!searchForm.isFormValid) {
+      return setSearchForm({
+        ...searchForm,
+        error: 'Нужно ввести ключевое слово',
+      });
+    }
+    handleSearchMovies(searchForm.keyWord);
+  }
+
   return (
-    <article className="searchForm">
-      <form className="searchForm__bar">
-        <div className="searchForm__icon" />
-        <input className="searchForm__input" type="text" placeholder="Фильм" required />
-        <button className="searchForm__button" type="submit" >Найти</button>
-      </form>
-      <div className="searchForm__line" />
-      <Switch />
-    </article>
+    <>
+      <article className="searchForm">
+        <form className="searchForm__bar" noValidate onSubmit={handleSubmit} >
+          <div className="searchForm__icon" />
+          <input className="searchForm__input" type="text" placeholder="Фильм" name='keyWord' value={searchForm.keyWord} onChange={handleChange} required />
+          <button className="searchForm__button" type="submit" onSubmit={handleSubmit}>Найти</button>
+        </form>
+        <div className="searchForm__line" />
+        <Switch handleShortsCheckbox={handleShortsCheckbox} keyWord={keyWord} />
+      </article>
+      <span className="searchForm__error">{searchForm.error || error}</span>
+    </>
   );
 }
 

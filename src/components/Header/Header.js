@@ -8,7 +8,7 @@ function Header({loggedIn}) {
       <Link className="header__logo" to="/" />
       <nav className={loggedIn ? "header__links" : "header__links_none"}>
         <Link className="header__link-films" to="/movies" >Фильмы</Link>
-        <Link className="header__link-savefilms" to="saved-movies" >Сохраненные фильмы</Link>
+        <Link className="header__link-savefilms" to="/saved-movies" >Сохраненные фильмы</Link>
       </nav>
       <Link className={loggedIn ? "header__link-profile" : "header__links_none"} to="/profile" >
         <div className="header__icon"/>

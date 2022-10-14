@@ -12,7 +12,7 @@ function Navigation() {
     <>
       <div className={isVisible ? "navigation navigation__open" : "navigation"}>
         <div className="navigation__exit" onClick={() => setIsVisible(false)} />
-        <dib className="navigation__menu">
+        <div className="navigation__menu">
           <nav className="navigation__container">
             <Link className="navigation__link" to="/">Главная</Link>
             <Link className="navigation__link" to="/movies">Фильмы</Link>
@@ -22,7 +22,7 @@ function Navigation() {
             <div className="header__icon" />
             <p className="header__account">Аккаунт</p>
           </Link>
-        </dib>
+        </div>
       </div>
       <div className="navigation__button" onClick={() => setIsVisible(true)} />
     </>

@@ -1,7 +1,9 @@
 import './App.css';
 
 import React from 'react';
-import { Route, Routes, useNavigate, Navigate } from 'react-router-dom';
+import { Route, Routes, useNavigate, useLocation } from 'react-router-dom';
+
+import { CurrentUserContext } from '../../contexts/CurrentUserContext';
 
 import Main from '../Main/Main';
 import Movies from '../Movies/Movies';
@@ -10,21 +12,315 @@ import Profile from '../Profile/Profile';
 import Register from '../Register/Register';
 import Login from '../Login/Login';
 import PageNotFound from '../PageNotFound/PageNotFound';
+import ProtectedRoute from '../ProtectedRoute/ProtectedRoute';
+
+import * as api from '../../utils/MainApi';
+import * as movieApi from '../../utils/MoviesApi';
 
 function App() {
 
+  const navigate = useNavigate();
+  const location = useLocation();
+
+  const [loggedIn, setLoggedIn] = React.useState(false);
+  const [currentUser, setCurrentUser] = React.useState({
+    name: '',
+    email: '',
+    _id: '',
+  });
+
+  const [error, setError] = React.useState('');
+  const [preloader, setPreloader] = React.useState(false);
+
+  const [shortsCheckbox, setShortsCheckbox] = React.useState(false);
+  const [shortsCheckboxSaved, setShortsCheckboxSaved] = React.useState(false);
+
+  const [countMovies, setCountMovies] = React.useState(5);
+  const [moviesToLoad, setMoviesToLoad] = React.useState(2);
+  const [windowWidth, setWindowWidth] = React.useState(window.innerWidth);
+
+  const [moviesAfterSearch, setMoviesAfterSearch] = React.useState([]);
+  const [shortMoviesAfterSearch, setShortMoviesAfterSearch] = React.useState([]);
+  const [savedMovies, setSavedMovies] = React.useState([]);
+  const [shortSavedMovies, setShortSavedMovies] = React.useState([]);
+
+  const clearError = () => { setTimeout(() => setError(''), 5000) };
+
+  React.useEffect(() => {
+    if (loggedIn) {
+      api.getUser()
+        .then((res) => {
+          setCurrentUser(res);
+        })
+        .then(() => {
+          movieApi.getMovies()
+            .then((movies) => {
+              localStorage.setItem('localMovies', JSON.stringify(movies));
+            })
+            .then(() => {
+              getSavedMovies();
+            })
+            .catch((err) => {
+              console.log(err);
+            })
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    }
+  }, [loggedIn])
+
+  React.useEffect(() => {
+    if (document.cookie.slice(4)) {
+      api.getUser()
+        .then((res) => {
+          if (res.status === 401) {
+            navigate('/signin');
+            setLoggedIn(false);
+            console.log(res);
+          } else {
+            return res;
+          }
+        })
+        .then((res) => {
+          setCurrentUser(res);
+          setLoggedIn(true);
+          navigate('/movies');
+        })
+        .catch(err => console.log(err));
+    } else {
+      navigate('/signin');
+      setLoggedIn(false);
+    }
+  }, [])
+
+  React.useEffect(() => {
+    const windowResize = () => {
+      setWindowWidth(window.innerWidth);
+    };
+    if (location.pathname === '/movies') {
+      if (windowWidth <= 480) {
+        setCountMovies(5);
+        setMoviesToLoad(5);
+      } else if (windowWidth < 1280 && windowWidth > 480) {
+        setCountMovies(6);
+        setMoviesToLoad(6);
+      } else if (windowWidth >= 1280) {
+        setCountMovies(7);
+        setMoviesToLoad(7);
+      };
+    };
+    window.addEventListener('resize', windowResize);
+    return () => {
+      window.removeEventListener('resize', windowResize);
+    };
+  }, [windowWidth, location]);
+
+
+  const handleSearchMovies = (keyWord) => {
+    setPreloader(true)
+    if (!localStorage.getItem('localMovies')) {
+      movieApi.getMovies()
+        .then((movies) => {
+          localStorage.setItem('localMovies', JSON.stringify(movies));
+        })
+        .then(() => {
+          searchLocalMovies(keyWord)
+        })
+        .catch((err) => {
+          setError('Во время запроса произошла ошибка. Возможно, проблема с соединением или сервер недоступен. Подождите немного и попробуйте ещё раз');
+          console.log(err);
+        })
+    } else {
+      searchLocalMovies(keyWord)
+    }
+    setPreloader(false)
+  };
+
+  const searchLocalMovies = (keyWord) => {
+    localStorage.setItem('keyWord', keyWord);
+    const moviesFromLocalStorage = JSON.parse(localStorage.getItem('localMovies'));
+    const moviesAfterSearch = moviesFromLocalStorage.filter(movie => movie.nameRU.toLowerCase().includes(keyWord.toLowerCase()));
+    setMoviesAfterSearch(moviesAfterSearch);
+    const shortMoviesAfterSearch = moviesAfterSearch.filter(film => film.duration <= 40);
+    localStorage.setItem('shortMoviesAfterSearch', JSON.stringify(shortMoviesAfterSearch));
+    setShortMoviesAfterSearch(shortMoviesAfterSearch);
+    if (moviesAfterSearch.length === 0 || (shortsCheckbox && shortMoviesAfterSearch.length === 0)) {
+      setError('Ничего не найдено');
+    }
+    clearError();
+  }
+
+  const handleMoreMovies = () => {
+    setCountMovies(countMovies + moviesToLoad);
+  };
+
+  const handleShortsCheckbox = (keyWord) => {
+    if (keyWord && location.pathname === '/movies') {
+      setShortsCheckbox(!shortsCheckbox);
+      handleSearchMovies(keyWord);
+    } else if (keyWord && location.pathname === '/saved-movies') {
+      setShortsCheckboxSaved(!shortsCheckboxSaved);
+      handleSearchSavedMovies(keyWord);
+    } else {
+      setError('Нужно ввести ключевое слово');
+      clearError();
+    }
+  };
+
+  const handleSearchSavedMovies = (keyWord) => {
+    setPreloader(true);
+    setError('');
+    localStorage.setItem('keyWordSaved', keyWord);
+    const savedMovieFromLocalStorage = JSON.parse(localStorage.getItem('localSavedMovies'));
+    console.log(localStorage.getItem('localSavedMovies'))
+    const savedMovieAfterSearch = savedMovieFromLocalStorage.filter(film => film.nameRU.toLowerCase().includes(keyWord.toLowerCase()));
+    setSavedMovies(savedMovieAfterSearch);
+    const shortSavedMovieAfterSearch = savedMovieAfterSearch.filter(film => film.duration <= 40);
+    setShortSavedMovies(shortSavedMovieAfterSearch);
+    if (location.pathname === '/saved-movies' && savedMovieAfterSearch.length === 0) {
+      setError('Ничего не найдено');
+    } else if (location.pathname === '/saved-movies' && shortsCheckboxSaved && shortSavedMovieAfterSearch.length === 0) {
+      setError('Ничего не найдено');
+    };
+    setPreloader(false);
+    clearError();
+  }
+
+  const getSavedMovies = () => {
+    api.getMovie()
+      .then((savedMovies) => {
+        localStorage.setItem('localSavedMovies', JSON.stringify(savedMovies));
+        setSavedMovies(savedMovies);
+        const shortSavedMovies = savedMovies.filter(film => film.duration <= 40);
+        localStorage.setItem('shortLocalSavedMovies', JSON.stringify(shortSavedMovies));
+        setShortSavedMovies(shortSavedMovies);
+      })
+      .catch((err) => console.log(err));
+  }
+
+  const handleToggleLike = (movie) => {
+    if (!checkSaved(movie)) {
+      console.log(movie)
+      api.setMovie(movie)
+        .then((mov) => {
+          getSavedMovies();
+          console.log(mov)
+        })
+        .catch((err) => {
+          console.log(err);
+        })
+    } else if (checkSaved(movie)) {
+      handleDeleteMovie(getId(movie));
+    };
+  }
+
+  const handleDeleteMovie = (id) => {
+    api.deleteMovie(id)
+      .then(() => {
+        getSavedMovies();
+      })
+      .catch((err) => {
+        console.log(err);
+      })
+  }
+
+  const checkSaved = (movie) => {
+    if (JSON.parse(localStorage.getItem('localSavedMovies'))) {
+      return JSON.parse(localStorage.getItem('localSavedMovies')).some((mov) => mov.movieId === movie.id);
+    };
+  };
+
+  const getId = (movie) => {
+    if (JSON.parse(localStorage.getItem('localSavedMovies'))) {
+      return JSON.parse(localStorage.getItem('localSavedMovies')).find((mov) => mov.movieId === movie.id)._id;
+    };
+  };
+
+  const handleUpdateUser = (name, email) => {
+    api.setUser(name, email)
+      .then((res) => {
+        console.log(res)
+        setCurrentUser({
+          loggedIn: true,
+          name: res.name,
+          email: res.email,
+          _id: res._id,
+        });
+        setError('Данные пользователя успешно сохранены');
+      })
+      .catch((err) => {
+        setError('Не удалось сохранить данные, повторите попытку');
+        console.log(err);
+      })
+      .finally(() => {
+        clearError();
+      });
+  };
+
+  const handleExit = () => {
+    api.deauthorize()
+      .then((res) => {
+        if (res) {
+          localStorage.clear();
+          setLoggedIn(false);
+          navigate('/signin');
+          setShortsCheckbox(false);
+          setShortsCheckboxSaved(false);
+          setMoviesAfterSearch([]);
+          setShortMoviesAfterSearch([]);
+          setSavedMovies([]);
+          setShortSavedMovies([]);
+          setCurrentUser({
+            name: '',
+            email: '',
+            _id: '',
+          });
+        } else {
+          throw new Error('Ошибка выхода')
+        }
+      })
+      .catch((err) => console.log(err)
+      )
+  }
+
   return (
-    <div className="App">
-      <Routes>
-        <Route path='/' element={<Main loggedIn={false} />} />
-        <Route path='/movies' element={<Movies loggedIn={true} />} />
-        <Route path='/saved-movies' element={<SavedMovies loggedIn={true} />} />
-        <Route path='/profile' element={<Profile loggedIn={true} />} />
-        <Route path='/signin' element={<Register />} />
-        <Route path='/signup' element={<Login />} />
-        <Route path='*' element={<PageNotFound />} />
-      </Routes>
-    </div>
+    <CurrentUserContext.Provider value={currentUser}>
+      <div className="App">
+        <Routes>
+          <Route path='/' element={<Main loggedIn={loggedIn} />} />
+
+          <Route path='/movies' element={<ProtectedRoute loggedIn={loggedIn} component={Movies}
+            moviesAfterSearch={moviesAfterSearch}
+            shortMoviesAfterSearch={shortMoviesAfterSearch}
+            shortsCheckbox={shortsCheckbox}
+            keyWord={localStorage.getItem('keyWord')}
+            handleSearchMovies={handleSearchMovies}
+            handleShortsCheckbox={handleShortsCheckbox}
+            error={error} preloader={preloader}
+            countMovies={countMovies}
+            handleMoreMovies={handleMoreMovies}
+            handleToggleLike={handleToggleLike}
+            checkSaved={checkSaved} />} 
+          />
+
+          <Route path='/saved-movies' element={<ProtectedRoute loggedIn={loggedIn} component={SavedMovies}
+            savedMovies={savedMovies}
+            shortSavedMovies={shortSavedMovies}
+            shortsCheckboxSaved={shortsCheckboxSaved}
+            keyWord={localStorage.getItem('keyWordSaved')}
+            handleShortsCheckbox={handleShortsCheckbox}
+            handleSearchSavedMovies={handleSearchSavedMovies}
+            error={error} preloader={preloader} handleToggleLike={handleDeleteMovie} />} 
+          />
+
+          <Route path='/profile' element={<ProtectedRoute loggedIn={loggedIn} component={Profile} handleUpdateUser={handleUpdateUser} handleExit={handleExit} error={error} />} />
+          <Route path='/signup' element={<Register setLoggedIn={setLoggedIn} setCurrentUser={setCurrentUser} />} />
+          <Route path='/signin' element={<Login setLoggedIn={setLoggedIn} setCurrentUser={setCurrentUser} />} />
+          <Route path='*' element={<PageNotFound />} />
+        </Routes>
+      </div>
+    </CurrentUserContext.Provider>
   );
 }
 
