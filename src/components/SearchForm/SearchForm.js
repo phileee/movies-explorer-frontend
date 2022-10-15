@@ -1,8 +1,11 @@
 import './SearchForm.css';
 import React, { useState } from "react";
+import { useLocation } from 'react-router-dom';
 import Switch from '../Switch/Switch';
 
-function SearchForm({ handleSearchMovies, error, handleShortsCheckbox, keyWord }) {
+function SearchForm({ handleSearchMovies, error, handleShortsCheckbox, keyWord, shortsCheckbox, shortsCheckboxSaved }) {
+
+  const location = useLocation();
 
   const [searchForm, setSearchForm] = useState({
     error: '',
@@ -17,8 +20,13 @@ function SearchForm({ handleSearchMovies, error, handleShortsCheckbox, keyWord }
       [evt.target.name]: evt.target.value,
       isFormValid: evt.target.closest('form').checkValidity(),
     });
-    
   }
+
+  React.useEffect(() => {
+    if (keyWord && (location.pathname === '/movies' || location.pathname === '/saved-movies')) {
+      setSearchForm({ keyWord: keyWord });
+    }
+}, []);
 
   const handleSubmit = (evt) => {
     evt.preventDefault();
@@ -44,7 +52,7 @@ function SearchForm({ handleSearchMovies, error, handleShortsCheckbox, keyWord }
           <button className="searchForm__button" type="submit" onSubmit={handleSubmit}>Найти</button>
         </form>
         <div className="searchForm__line" />
-        <Switch handleShortsCheckbox={handleShortsCheckbox} keyWord={keyWord} />
+        <Switch handleShortsCheckbox={handleShortsCheckbox} keyWord={searchForm.keyWord} shortsCheckbox={shortsCheckbox} shortsCheckboxSaved={shortsCheckboxSaved} />
       </article>
       <span className="searchForm__error">{searchForm.error || error}</span>
     </>

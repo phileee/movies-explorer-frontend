@@ -82,6 +82,10 @@
   opacity: 0.6;
 }
 
+.profile__edit_disabled {
+  color: #8b8989;
+}
+
 .profile__exit {
   margin: 16px auto 0;
   outline: none;

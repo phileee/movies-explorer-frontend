@@ -59,7 +59,7 @@ function Register({ setLoggedIn }) {
       <input className="form__input" type="name" name="name" id="name" value={inputValidation?.values?.name || ''} onChange={inputValidation.handleChange} minLength="2" maxLength="30" required />
       <span className="form__error">{name}</span>
       <label className="form__subtitle">E-mail</label>
-      <input className="form__input" type="email" name="email" id="email" value={inputValidation?.values?.email || ''} onChange={inputValidation.handleChange} required />
+      <input className="form__input" type="email" name="email" id="email" value={inputValidation?.values?.email || ''} onChange={inputValidation.handleChange} pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,4}$" required />
       <span className="form__error">{email}</span>
       <label className="form__subtitle">Пароль</label>
       <input className="form__input" type="password" name="password" id="password" value={inputValidation?.values?.password || ''} onChange={inputValidation.handleChange} required />

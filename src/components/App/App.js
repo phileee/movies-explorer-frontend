@@ -67,7 +67,23 @@ function App() {
         .catch((err) => {
           console.log(err);
         });
-    }
+    };
+
+    if (localStorage.getItem('shortsCheckbox') === 'true') {
+      setShortsCheckbox(true);
+    } else {
+      setShortsCheckbox(false);
+    };
+
+    if (localStorage.getItem('shortsCheckboxSaved') === 'true') {
+      setShortsCheckboxSaved(true);
+    } else {
+      setShortsCheckboxSaved(false);
+    };
+
+    setMoviesAfterSearch(JSON.parse(localStorage.getItem('movieAfterSearch')));
+    setShortMoviesAfterSearch(JSON.parse(localStorage.getItem('shortMovieAfterSearch')));
+
   }, [loggedIn])
 
   React.useEffect(() => {
@@ -75,9 +91,7 @@ function App() {
       api.getUser()
         .then((res) => {
           if (res.status === 401) {
-            navigate('/signin');
             setLoggedIn(false);
-            console.log(res);
           } else {
             return res;
           }
@@ -85,12 +99,25 @@ function App() {
         .then((res) => {
           setCurrentUser(res);
           setLoggedIn(true);
-          navigate('/movies');
+          navigate(location.pathname);
         })
-        .catch(err => console.log(err));
-    } else {
-      navigate('/signin');
-      setLoggedIn(false);
+        .catch(err => {
+          localStorage.clear();
+          setLoggedIn(false);
+          navigate('/signin');
+          setShortsCheckbox(false);
+          setShortsCheckboxSaved(false);
+          setMoviesAfterSearch([]);
+          setShortMoviesAfterSearch([]);
+          setSavedMovies([]);
+          setShortSavedMovies([]);
+          setCurrentUser({
+            name: '',
+            email: '',
+            _id: '',
+          });
+          console.log(err)
+        });
     }
   }, [])
 
@@ -128,6 +155,7 @@ function App() {
           searchLocalMovies(keyWord)
         })
         .catch((err) => {
+          setPreloader(false)
           setError('Во время запроса произошла ошибка. Возможно, проблема с соединением или сервер недоступен. Подождите немного и попробуйте ещё раз');
           console.log(err);
         })
@@ -142,12 +170,13 @@ function App() {
     const moviesFromLocalStorage = JSON.parse(localStorage.getItem('localMovies'));
     const moviesAfterSearch = moviesFromLocalStorage.filter(movie => movie.nameRU.toLowerCase().includes(keyWord.toLowerCase()));
     setMoviesAfterSearch(moviesAfterSearch);
+    localStorage.setItem('movieAfterSearch', JSON.stringify(moviesAfterSearch));
     const shortMoviesAfterSearch = moviesAfterSearch.filter(film => film.duration <= 40);
     localStorage.setItem('shortMoviesAfterSearch', JSON.stringify(shortMoviesAfterSearch));
     setShortMoviesAfterSearch(shortMoviesAfterSearch);
-    if (moviesAfterSearch.length === 0 || (shortsCheckbox && shortMoviesAfterSearch.length === 0)) {
+    if ((location.pathname === '/movies' && moviesAfterSearch.length === 0) || (location.pathname === '/movies' && shortsCheckbox && shortMoviesAfterSearch.length === 0)) {
       setError('Ничего не найдено');
-    }
+    } 
     clearError();
   }
 
@@ -158,9 +187,11 @@ function App() {
   const handleShortsCheckbox = (keyWord) => {
     if (keyWord && location.pathname === '/movies') {
       setShortsCheckbox(!shortsCheckbox);
+      localStorage.setItem('shortsCheckbox', !shortsCheckbox);
       handleSearchMovies(keyWord);
     } else if (keyWord && location.pathname === '/saved-movies') {
       setShortsCheckboxSaved(!shortsCheckboxSaved);
+      localStorage.setItem('shortsCheckboxSaved', !shortsCheckboxSaved);
       handleSearchSavedMovies(keyWord);
     } else {
       setError('Нужно ввести ключевое слово');
@@ -178,11 +209,9 @@ function App() {
     setSavedMovies(savedMovieAfterSearch);
     const shortSavedMovieAfterSearch = savedMovieAfterSearch.filter(film => film.duration <= 40);
     setShortSavedMovies(shortSavedMovieAfterSearch);
-    if (location.pathname === '/saved-movies' && savedMovieAfterSearch.length === 0) {
+    if ((location.pathname === '/saved-movies' && savedMovieAfterSearch.length === 0) || (location.pathname === '/saved-movies' && shortsCheckboxSaved && shortSavedMovieAfterSearch.length === 0)) {
       setError('Ничего не найдено');
-    } else if (location.pathname === '/saved-movies' && shortsCheckboxSaved && shortSavedMovieAfterSearch.length === 0) {
-      setError('Ничего не найдено');
-    };
+    }
     setPreloader(false);
     clearError();
   }
@@ -199,14 +228,24 @@ function App() {
       .catch((err) => console.log(err));
   }
 
+  const checkMovieLink = (movie) => {
+    let fixedMovie = movie;
+    if (!/[-a-zA-Z0-9-:_.~/?#[\]@!$&'()*+=,;]{2,256}\.[a-z]{2,4}\b(\/[-a-zA-Z0-9-~._:/?#[\]@!$&'()*+,;=]*)?/.test(movie.trailerLink)) {
+      fixedMovie.trailerLink = "https://youtu.be/";
+      return fixedMovie;
+    } else {
+      return fixedMovie;
+    }
+  };
+
   const handleToggleLike = (movie) => {
-    if (!checkSaved(movie)) {
-      console.log(movie)
-      api.setMovie(movie)
+    let fixedMovie = checkMovieLink(movie);
+    if (!checkSaved(fixedMovie)) {
+      api.setMovie(fixedMovie)
         .then((mov) => {
           getSavedMovies();
-          console.log(mov)
         })
+        
         .catch((err) => {
           console.log(err);
         })
@@ -301,7 +340,7 @@ function App() {
             countMovies={countMovies}
             handleMoreMovies={handleMoreMovies}
             handleToggleLike={handleToggleLike}
-            checkSaved={checkSaved} />} 
+            checkSaved={checkSaved} />}
           />
 
           <Route path='/saved-movies' element={<ProtectedRoute loggedIn={loggedIn} component={SavedMovies}
@@ -311,7 +350,7 @@ function App() {
             keyWord={localStorage.getItem('keyWordSaved')}
             handleShortsCheckbox={handleShortsCheckbox}
             handleSearchSavedMovies={handleSearchSavedMovies}
-            error={error} preloader={preloader} handleToggleLike={handleDeleteMovie} />} 
+            error={error} preloader={preloader} handleToggleLike={handleDeleteMovie} />}
           />
 
           <Route path='/profile' element={<ProtectedRoute loggedIn={loggedIn} component={Profile} handleUpdateUser={handleUpdateUser} handleExit={handleExit} error={error} />} />

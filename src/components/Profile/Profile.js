@@ -29,7 +29,6 @@ function Profile({ loggedIn, handleExit, handleUpdateUser, error }) {
   const handleSubmit = (e) => {
     e.preventDefault();
     const { name, email } = inputValidation.values;
-    console.log(name, email)
     handleUpdateUser(name, email);
     inputValidation.resetForm();
   };
@@ -43,19 +42,19 @@ function Profile({ loggedIn, handleExit, handleUpdateUser, error }) {
           <form className="profile__form">
             <label className="profile__string">
               <h3 className="profile__title">Имя</h3>
-              <input className="profile__input" placeholder={currentUser.name} type="name" name="name" id="name" value={inputValidation?.values?.name || ''} onChange={inputValidation.handleChange} minLength="2" maxLength="30" required />
+              <input className="profile__input" type="name" name="name" id="name" placeholder={currentUser.name} value={inputValidation?.values?.name || ''} onChange={inputValidation.handleChange} minLength="2" maxLength="30" required />
             </label>
             <div className="profile__line" />
             <label className="profile__string">
               <h3 className="profile__title">E-mail</h3>
-              <input className="profile__input" placeholder={currentUser.email} type="email" name="email" value={inputValidation?.values?.email || ''} onChange={inputValidation.handleChange} required />
+              <input className="profile__input" type="email" name="email" placeholder={currentUser.email} value={inputValidation?.values?.email || ''} onChange={inputValidation.handleChange} pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,4}$" required />
             </label>
           </form>
           <span className="profile__error">{name}</span>
           <span className="profile__error">{email}</span>
           <span className="profile__error">{error}</span>
           <div className="profile__buttons">
-            <button className="profile__edit" disabled={(!valid && 'disabled')} onClick={handleSubmit} >Редактировать</button>
+            <button className={!valid ? "profile__edit profile__edit_disabled" : "profile__edit"} disabled={(!valid && 'disabled')} onClick={handleSubmit} >Редактировать</button>
             <button className="profile__exit" onClick={handleExit} >Выйти из аккаунта</button>
           </div>
         </section>
