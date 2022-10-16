@@ -52,22 +52,26 @@ function App() {
         .then((res) => {
           setCurrentUser(res);
         })
-        .then(() => {
-          movieApi.getMovies()
-            .then((movies) => {
-              localStorage.setItem('localMovies', JSON.stringify(movies));
-            })
-            .then(() => {
-              getSavedMovies();
-            })
-            .catch((err) => {
-              console.log(err);
-            })
-        })
         .catch((err) => {
           console.log(err);
         });
-    };
+
+      getSavedMovies();
+    } else {
+      localStorage.clear();
+      setLoggedIn(false);
+      setShortsCheckbox(false);
+      setShortsCheckboxSaved(false);
+      setMoviesAfterSearch([]);
+      setShortMoviesAfterSearch([]);
+      setSavedMovies([]);
+      setShortSavedMovies([]);
+      setCurrentUser({
+        name: '',
+        email: '',
+        _id: '',
+      });
+    }
 
     if (localStorage.getItem('shortsCheckbox') === 'true') {
       setShortsCheckbox(true);
@@ -92,12 +96,13 @@ function App() {
         .then((res) => {
           if (res.status === 401) {
             setLoggedIn(false);
+            throw new Error('Нет прав')
           } else {
             return res;
           }
         })
         .then((res) => {
-          setCurrentUser(res);
+          setCurrentUser(res)
           setLoggedIn(true);
           navigate(location.pathname);
         })
@@ -155,14 +160,18 @@ function App() {
           searchLocalMovies(keyWord)
         })
         .catch((err) => {
-          setPreloader(false)
           setError('Во время запроса произошла ошибка. Возможно, проблема с соединением или сервер недоступен. Подождите немного и попробуйте ещё раз');
           console.log(err);
         })
+        .finally(() => {
+          setPreloader(false);
+          setError('');
+        })
     } else {
-      searchLocalMovies(keyWord)
+      setPreloader(true)
+      searchLocalMovies(keyWord);
+      setPreloader(false);
     }
-    setPreloader(false)
   };
 
   const searchLocalMovies = (keyWord) => {
@@ -176,7 +185,7 @@ function App() {
     setShortMoviesAfterSearch(shortMoviesAfterSearch);
     if ((location.pathname === '/movies' && moviesAfterSearch.length === 0) || (location.pathname === '/movies' && shortsCheckbox && shortMoviesAfterSearch.length === 0)) {
       setError('Ничего не найдено');
-    } 
+    }
     clearError();
   }
 
@@ -186,12 +195,12 @@ function App() {
 
   const handleShortsCheckbox = (keyWord) => {
     if (keyWord && location.pathname === '/movies') {
-      setShortsCheckbox(!shortsCheckbox);
       localStorage.setItem('shortsCheckbox', !shortsCheckbox);
+      setShortsCheckbox(!shortsCheckbox);
       handleSearchMovies(keyWord);
     } else if (keyWord && location.pathname === '/saved-movies') {
-      setShortsCheckboxSaved(!shortsCheckboxSaved);
       localStorage.setItem('shortsCheckboxSaved', !shortsCheckboxSaved);
+      setShortsCheckboxSaved(!shortsCheckboxSaved);
       handleSearchSavedMovies(keyWord);
     } else {
       setError('Нужно ввести ключевое слово');
@@ -204,7 +213,6 @@ function App() {
     setError('');
     localStorage.setItem('keyWordSaved', keyWord);
     const savedMovieFromLocalStorage = JSON.parse(localStorage.getItem('localSavedMovies'));
-    console.log(localStorage.getItem('localSavedMovies'))
     const savedMovieAfterSearch = savedMovieFromLocalStorage.filter(film => film.nameRU.toLowerCase().includes(keyWord.toLowerCase()));
     setSavedMovies(savedMovieAfterSearch);
     const shortSavedMovieAfterSearch = savedMovieAfterSearch.filter(film => film.duration <= 40);
@@ -245,7 +253,7 @@ function App() {
         .then((mov) => {
           getSavedMovies();
         })
-        
+
         .catch((err) => {
           console.log(err);
         })
@@ -347,6 +355,9 @@ function App() {
             savedMovies={savedMovies}
             shortSavedMovies={shortSavedMovies}
             shortsCheckboxSaved={shortsCheckboxSaved}
+            setShortsCheckboxSaved={setShortsCheckboxSaved}
+            setSavedMovies={setSavedMovies} 
+            setShortSavedMovies={setShortSavedMovies}
             keyWord={localStorage.getItem('keyWordSaved')}
             handleShortsCheckbox={handleShortsCheckbox}
             handleSearchSavedMovies={handleSearchSavedMovies}

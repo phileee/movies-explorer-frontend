@@ -8,7 +8,7 @@ function Switch({shortsCheckbox, shortsCheckboxSaved, handleShortsCheckbox, keyW
   return (
     <div className="switch">
       <label className="switch__box" htmlFor="switch__checkbox">
-        <input type="checkbox" id="switch__checkbox" disabled={!keyWord && 'disabled'} value={location.pathname === '/movies' ? shortsCheckbox : shortsCheckboxSaved} onChange={() => handleShortsCheckbox(keyWord)} />
+        <input type="checkbox" id="switch__checkbox" value={location.pathname === '/movies' ? shortsCheckbox : shortsCheckboxSaved} checked={location.pathname === '/movies' ? shortsCheckbox : shortsCheckboxSaved} onChange={() => handleShortsCheckbox(keyWord)} />
         <div className="switch__checkbox-slider switch__checkbox-round" />
       </label>
       <span className="switch__name">Короткометражки</span>

@@ -2,9 +2,12 @@ import './Profile.css';
 import Header from '../Header/Header';
 import { CurrentUserContext } from '../../contexts/CurrentUserContext';
 import React, { useState } from "react";
+import { useLocation } from 'react-router-dom';
 import useFormWithValidation from '../../utils/UseFormWithValidation';
 
 function Profile({ loggedIn, handleExit, handleUpdateUser, error }) {
+
+  const location = useLocation();
 
   const currentUser = React.useContext(CurrentUserContext);
 
@@ -21,6 +24,11 @@ function Profile({ loggedIn, handleExit, handleUpdateUser, error }) {
       setMatchValues(true);
     }
   }, [inputValidation.values.name, inputValidation.values.email, currentUser]);
+
+  React.useEffect(() => {
+    inputValidation.values.name = currentUser.name;
+    inputValidation.values.email = currentUser.email;
+  }, [location]);
 
   React.useEffect(() => {
     setValid(inputValidation.isValid && matchValues)
@@ -42,12 +50,12 @@ function Profile({ loggedIn, handleExit, handleUpdateUser, error }) {
           <form className="profile__form">
             <label className="profile__string">
               <h3 className="profile__title">Имя</h3>
-              <input className="profile__input" type="name" name="name" id="name" placeholder={currentUser.name} value={inputValidation?.values?.name || ''} onChange={inputValidation.handleChange} minLength="2" maxLength="30" required />
+              <input className="profile__input" type="name" name="name" id="name" value={inputValidation?.values?.name || ''} onChange={inputValidation.handleChange} minLength="2" maxLength="30" required />
             </label>
             <div className="profile__line" />
             <label className="profile__string">
               <h3 className="profile__title">E-mail</h3>
-              <input className="profile__input" type="email" name="email" placeholder={currentUser.email} value={inputValidation?.values?.email || ''} onChange={inputValidation.handleChange} pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,4}$" required />
+              <input className="profile__input" type="email" name="email" value={inputValidation?.values?.email || ''} onChange={inputValidation.handleChange} pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,4}$" required />
             </label>
           </form>
           <span className="profile__error">{name}</span>

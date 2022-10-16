@@ -23,10 +23,10 @@ function SearchForm({ handleSearchMovies, error, handleShortsCheckbox, keyWord, 
   }
 
   React.useEffect(() => {
-    if (keyWord && (location.pathname === '/movies' || location.pathname === '/saved-movies')) {
+    if (keyWord && (location.pathname === '/movies')) {
       setSearchForm({ keyWord: keyWord });
     }
-}, []);
+  }, []);
 
   const handleSubmit = (evt) => {
     evt.preventDefault();

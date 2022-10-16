@@ -84,6 +84,7 @@
 
 .profile__edit_disabled {
   color: #8b8989;
+  cursor: default;
 }
 
 .profile__exit {
