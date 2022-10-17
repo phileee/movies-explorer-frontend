@@ -7,50 +7,46 @@ const checkResponse = (res) => {
   return Promise.reject(`Ошибка: ${res.status}`);
 };
 
-export const getUser = () => {
+export const getUser = (token) => {
   return fetch(`${BASE_URL}/users/me`, {
-    credentials: 'include',
     method: 'GET',
     headers: {
       'Content-Type': 'application/json',
-      'Access-Control-Allow-Credentials': 'true'
+      'Authorization': `Bearer ${token}`,
     },
   }).then(checkResponse);
 };
 
 export const setUser = (name, email) => {
   return fetch(`${BASE_URL}/users/me`, {
-    credentials: 'include',
     method: 'PATCH',
     headers: {
       'Content-Type': 'application/json',
-      'Access-Control-Allow-Credentials': 'true'
+      'Authorization': `Bearer ${localStorage.getItem('jwt')}`,
     },
     body: JSON.stringify({
-      name: name,
-      email: email
+      name,
+      email
     })
   }).then(checkResponse);
 };
 
 export const getMovie = () => {
   return fetch(`${BASE_URL}/movies`, {
-    credentials: 'include',
     method: 'GET',
     headers: {
       'Content-Type': 'application/json',
-      'Access-Control-Allow-Credentials': 'true'
+      'Authorization': `Bearer ${localStorage.getItem('jwt')}`,
     },
   }).then(checkResponse);
 };
 
 export const setMovie = (movie) => {
   return fetch(`${BASE_URL}/movies`, {
-    credentials: 'include',
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
-      'Access-Control-Allow-Credentials': 'true'
+      'Authorization': `Bearer ${localStorage.getItem('jwt')}`,
     },
     body: JSON.stringify({
       country: movie.country,
@@ -70,47 +66,38 @@ export const setMovie = (movie) => {
 
 export const deleteMovie = (id) => {
   return fetch(`${BASE_URL}/movies/${id}`, {
-    method : 'DELETE',
-    credentials: 'include',
+    method: 'DELETE',
     headers: {
       'Content-Type': 'application/json',
-      'Access-Control-Allow-Credentials': 'true'
+      'Authorization': `Bearer ${localStorage.getItem('jwt')}`,
     },
   })
-  .then(checkResponse);
+    .then(checkResponse);
 };
 
 export const signup = (name, email, password) => {
   return fetch(`${BASE_URL}/signup`, {
     method: 'POST',
-    credentials: 'include',
     headers: {
       'Content-Type': 'application/json',
-      'Access-Control-Allow-Credentials': 'true'
     },
-    body: JSON.stringify({ name: name, email: email, password: password })
+    body: JSON.stringify({
+      name: name,
+      email: email,
+      password: password,
+    })
   })
 };
 
 export const signin = (email, password) => {
   return fetch(`${BASE_URL}/signin`, {
     method: "POST",
-    credentials: 'include',
     headers: {
       'Content-Type': 'application/json',
-      'Access-Control-Allow-Credentials': 'true'
     },
-    body: JSON.stringify({ email: email, password: password })
-  })
-};
-
-export const deauthorize = () => {
-  return fetch(`${BASE_URL}/signout`, {
-    method: "GET",
-    credentials: 'include',
-    headers: {
-      'Content-Type': 'application/json',
-      'Access-Control-Allow-Credentials': 'true'
-    },
+    body: JSON.stringify({
+      email: email,
+      password: password,
+    })
   })
 };

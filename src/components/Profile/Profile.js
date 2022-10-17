@@ -18,7 +18,7 @@ function Profile({ loggedIn, handleExit, handleUpdateUser, error }) {
   const { name, email } = inputValidation.errors;
 
   React.useEffect(() => {
-    if (inputValidation.values.name === currentUser.name && inputValidation.values.email === currentUser.email) {
+    if (inputValidation.values.name === JSON.parse(localStorage.getItem("user")).name && inputValidation.values.email === JSON.parse(localStorage.getItem("user")).email) {
       setMatchValues(false);
     } else {
       setMatchValues(true);
@@ -26,8 +26,8 @@ function Profile({ loggedIn, handleExit, handleUpdateUser, error }) {
   }, [inputValidation.values.name, inputValidation.values.email, currentUser]);
 
   React.useEffect(() => {
-    inputValidation.values.name = currentUser.name;
-    inputValidation.values.email = currentUser.email;
+    inputValidation.values.name = JSON.parse(localStorage.getItem("user")).name;
+    inputValidation.values.email = JSON.parse(localStorage.getItem("user")).email;
   }, [location]);
 
   React.useEffect(() => {
@@ -46,16 +46,16 @@ function Profile({ loggedIn, handleExit, handleUpdateUser, error }) {
       <Header loggedIn={loggedIn} />
       <main className="profile">
         <section className="profile__box">
-          <h2 className="profile__hello">Привет, {currentUser.name}!</h2>
+          <h2 className="profile__hello">Привет, {JSON.parse(localStorage.getItem("user")).name}!</h2>
           <form className="profile__form">
             <label className="profile__string">
               <h3 className="profile__title">Имя</h3>
-              <input className="profile__input" type="name" name="name" id="name" value={inputValidation?.values?.name || ''} onChange={inputValidation.handleChange} minLength="2" maxLength="30" required />
+              <input className="profile__input" type="name" name="name" id="name" value={inputValidation?.values?.name || JSON.parse(localStorage.getItem("user")).name || ''} onChange={inputValidation.handleChange} minLength="2" maxLength="30" required />
             </label>
             <div className="profile__line" />
             <label className="profile__string">
               <h3 className="profile__title">E-mail</h3>
-              <input className="profile__input" type="email" name="email" value={inputValidation?.values?.email || ''} onChange={inputValidation.handleChange} pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,4}$" required />
+              <input className="profile__input" type="email" name="email" value={inputValidation?.values?.email || JSON.parse(localStorage.getItem("user")).email || ''} onChange={inputValidation.handleChange} pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,4}$" required />
             </label>
           </form>
           <span className="profile__error">{name}</span>

@@ -46,53 +46,14 @@ function App() {
 
   const clearError = () => { setTimeout(() => setError(''), 5000) };
 
-  React.useEffect(() => {
-    if (loggedIn) {
-      api.getUser()
-        .then((res) => {
-          setCurrentUser(res);
-        })
-        .catch((err) => {
-          console.log(err);
-        });
-
-      getSavedMovies();
-    } else {
-      localStorage.clear();
-      setLoggedIn(false);
-      setShortsCheckbox(false);
-      setShortsCheckboxSaved(false);
-      setMoviesAfterSearch([]);
-      setShortMoviesAfterSearch([]);
-      setSavedMovies([]);
-      setShortSavedMovies([]);
-      setCurrentUser({
-        name: '',
-        email: '',
-        _id: '',
-      });
-    }
-
-    if (localStorage.getItem('shortsCheckbox') === 'true') {
-      setShortsCheckbox(true);
-    } else {
-      setShortsCheckbox(false);
-    };
-
-    if (localStorage.getItem('shortsCheckboxSaved') === 'true') {
-      setShortsCheckboxSaved(true);
-    } else {
-      setShortsCheckboxSaved(false);
-    };
-
-    setMoviesAfterSearch(JSON.parse(localStorage.getItem('movieAfterSearch')));
-    setShortMoviesAfterSearch(JSON.parse(localStorage.getItem('shortMovieAfterSearch')));
-
-  }, [loggedIn])
+  const verificationToken = () => {
+    
+  }
 
   React.useEffect(() => {
-    if (document.cookie.slice(4)) {
-      api.getUser()
+    const jwt = localStorage.getItem('jwt');
+    if (jwt) {
+      api.getUser(jwt)
         .then((res) => {
           if (res.status === 401) {
             setLoggedIn(false);
@@ -104,6 +65,11 @@ function App() {
         .then((res) => {
           setCurrentUser(res)
           setLoggedIn(true);
+        })
+        .then(() => {
+          getSavedMovies();
+        })
+        .then(() => {
           navigate(location.pathname);
         })
         .catch(err => {
@@ -124,6 +90,21 @@ function App() {
           console.log(err)
         });
     }
+
+    if (localStorage.getItem('shortsCheckbox') === 'true') {
+      setShortsCheckbox(true);
+    } else {
+      setShortsCheckbox(false);
+    };
+
+    if (localStorage.getItem('shortsCheckboxSaved') === 'true') {
+      setShortsCheckboxSaved(true);
+    } else {
+      setShortsCheckboxSaved(false);
+    };
+
+    setMoviesAfterSearch(JSON.parse(localStorage.getItem('movieAfterSearch')));
+    setShortMoviesAfterSearch(JSON.parse(localStorage.getItem('shortMovieAfterSearch')));
   }, [])
 
   React.useEffect(() => {
@@ -147,6 +128,62 @@ function App() {
       window.removeEventListener('resize', windowResize);
     };
   }, [windowWidth, location]);
+
+  const handleSignup = (name, email, password) => {
+    api.signup(name, email, password)
+      .then((res) => {
+        if (res.status === 400 || res.status === 401 || res.status === 409) {
+          setError('Некорректные данные, попробуйте повторить запрос');
+          return Promise.reject(`Ошибка: ${res.status}`);
+        } else {
+          return res.json();
+        }
+      })
+      .then(() => {
+        handleSignin(email, password)
+      })
+      .catch(err => console.log(err))
+      .finally(() => {
+        clearError();
+      })
+  }
+
+  const handleSignin = (email, password) => {
+    api.signin(email, password)
+      .then((res) => {
+        if (res.status === 400 || res.status === 401) {
+          setError('Некорректные данные, попробуйте повторить запрос');
+          return Promise.reject(`Ошибка: ${res.status}`);
+        } else {
+          return res.json();
+        }
+      })
+      .then((res) => {
+        localStorage.setItem("jwt", res.token);
+        api.getUser(res.token)
+          .then((res) => {
+            localStorage.setItem("user", JSON.stringify(res));;
+            setCurrentUser({
+              name: res.name,
+              email: res.email,
+              _id: res._id,
+            })
+            getSavedMovies();
+          })
+          .then(() => {
+            setLoggedIn(true);
+            navigate('/movies');
+          })
+          .catch((err) => {
+            setError('Некорректные данные, попробуйте повторить запрос');
+            console.log(err);
+          })
+      })
+      .catch(err => console.log(err))
+      .finally(() => {
+        clearError();
+      })
+  }
 
 
   const handleSearchMovies = (keyWord) => {
@@ -287,9 +324,8 @@ function App() {
   const handleUpdateUser = (name, email) => {
     api.setUser(name, email)
       .then((res) => {
-        console.log(res)
+        localStorage.setItem("user", JSON.stringify(res));
         setCurrentUser({
-          loggedIn: true,
           name: res.name,
           email: res.email,
           _id: res._id,
@@ -306,29 +342,20 @@ function App() {
   };
 
   const handleExit = () => {
-    api.deauthorize()
-      .then((res) => {
-        if (res) {
-          localStorage.clear();
-          setLoggedIn(false);
-          navigate('/signin');
-          setShortsCheckbox(false);
-          setShortsCheckboxSaved(false);
-          setMoviesAfterSearch([]);
-          setShortMoviesAfterSearch([]);
-          setSavedMovies([]);
-          setShortSavedMovies([]);
-          setCurrentUser({
-            name: '',
-            email: '',
-            _id: '',
-          });
-        } else {
-          throw new Error('Ошибка выхода')
-        }
-      })
-      .catch((err) => console.log(err)
-      )
+    localStorage.clear();
+    setLoggedIn(false);
+    navigate('/');
+    setShortsCheckbox(false);
+    setShortsCheckboxSaved(false);
+    setMoviesAfterSearch([]);
+    setShortMoviesAfterSearch([]);
+    setSavedMovies([]);
+    setShortSavedMovies([]);
+    setCurrentUser({
+      name: '',
+      email: '',
+      _id: '',
+    });
   }
 
   return (
@@ -356,7 +383,7 @@ function App() {
             shortSavedMovies={shortSavedMovies}
             shortsCheckboxSaved={shortsCheckboxSaved}
             setShortsCheckboxSaved={setShortsCheckboxSaved}
-            setSavedMovies={setSavedMovies} 
+            setSavedMovies={setSavedMovies}
             setShortSavedMovies={setShortSavedMovies}
             keyWord={localStorage.getItem('keyWordSaved')}
             handleShortsCheckbox={handleShortsCheckbox}
@@ -365,8 +392,8 @@ function App() {
           />
 
           <Route path='/profile' element={<ProtectedRoute loggedIn={loggedIn} component={Profile} handleUpdateUser={handleUpdateUser} handleExit={handleExit} error={error} />} />
-          <Route path='/signup' element={<Register setLoggedIn={setLoggedIn} setCurrentUser={setCurrentUser} />} />
-          <Route path='/signin' element={<Login setLoggedIn={setLoggedIn} setCurrentUser={setCurrentUser} />} />
+          <Route path='/signup' element={<Register error={error} handleSignup={handleSignup} />} />
+          <Route path='/signin' element={<Login error={error} handleSignin={handleSignin} />} />
           <Route path='*' element={<PageNotFound />} />
         </Routes>
       </div>
