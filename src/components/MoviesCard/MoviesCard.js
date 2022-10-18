@@ -1,16 +1,21 @@
 import './MoviesCard.css';
 
-function MoviesCard({ movie, isLiked, deleteCard }) {
+import { useLocation } from 'react-router-dom';
+
+function MoviesCard({ movie, deleteCard, handleToggleLike, checkSaved }) {
+
+  const location = useLocation();
+
   return (
     <article className="moviesCard">
       <div className="moviesCard__info" >
         <div className="moviesCard__container">
-          <h2 className="moviesCard__title">33 слова о дизайне</h2>
-          <p className="moviesCard__duration">1ч 42м</p>
+          <h2 className="moviesCard__title">{movie.nameRU}</h2>
+          <p className="moviesCard__duration">{`${Math.floor(movie.duration / 60)}ч ${movie.duration % 60}м`}</p>
         </div>
-        <button className={deleteCard ? "moviesCard__delete" : (isLiked ? "moviesCard__like moviesCard__like_active" : "moviesCard__like")} />
+        <button className={deleteCard ? "moviesCard__delete" : (checkSaved ? "moviesCard__like moviesCard__like_active" : "moviesCard__like")} onClick={() => handleToggleLike(location.pathname === '/saved-movies' ? movie._id : movie)}/>
       </div>
-      <img className="moviesCard__fragment" alt="название будущего фильма" src="https://icdn.lenta.ru/images/2017/12/25/09/20171225091333068/detail_35d9248a97f38d7047d853e55ba83633.jpg" />
+      <a target="_blank" rel="noreferrer" href={movie.trailerLink} ><img className="moviesCard__fragment" alt={movie.nameRU} src={location.pathname === '/saved-movies' ? movie.image : `https://api.nomoreparties.co${movie.image.url}`} /></a>
     </article>
   );
 }

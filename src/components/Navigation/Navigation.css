@@ -28,7 +28,6 @@
     box-shadow: -500px 0 0 0 rgba(0, 0, 0, 0.4);
     visibility: visible;
     width: 520px;
-    overflow: hidden;
     position: fixed;
   }
 
@@ -63,6 +62,10 @@
     color: #000000;
     text-decoration: none;
     transition: opacity .4s linear;
+  }
+
+  .navigation__link_active {
+    text-decoration: underline;
   }
 
   .navigation__link:hover {

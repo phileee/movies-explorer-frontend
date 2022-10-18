@@ -55,6 +55,11 @@
   color: #FFFFFF;
   border: none;
   cursor: pointer;
+  transition: opacity .4s linear;
+}
+
+.form__login-button:hover {
+  opacity: 0.6;
 }
 
 .form__register-button {
@@ -75,6 +80,11 @@
 
 .form__register-button:hover {
   opacity: 0.6;
+}
+
+.form__button_disabled {
+  opacity: 0.6;
+  background-color: gray;
 }
 
 .form__link-span {
